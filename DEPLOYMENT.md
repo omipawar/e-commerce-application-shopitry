@@ -33,7 +33,10 @@ This document provides a comprehensive, step-by-step production deployment guide
 | **`notification-service`** | AWS Lambda 2 | Node.js 20.x Runtime | AWS Lambda API Gateway (5005) |
 
 ---
-
+```
+url to install mongosh - https://www.mongodb.com/docs/mongodb-shell/install/?operating-system=linux&linux-distribution=ubuntu&ubuntu-version=noble 
+url to install node npm - https://www.digitalocean.com/community/tutorials/how-to-install-node-js-on-ubuntu-22-04
+```
 ## 🗄️ Phase 1: MongoDB Atlas Database Provisioning (`edublitz`)
 
 1. Connect to the **MongoDB Atlas Cluster** named `edublitz`:
@@ -69,6 +72,39 @@ This document provides a comprehensive, step-by-step production deployment guide
 ## ⚡ Phase 2: Deploying AWS Lambda Serverless Functions
 
 ### 1. Deploy `payment-service` (AWS Lambda 1)
+```
+aws iam create-role \
+  --role-name ShopiTryLambdaRole \
+  --assume-role-policy-document '{
+    "Version": "2012-10-17",
+    "Statement": [
+      {
+        "Effect": "Allow",
+        "Principal": {
+          "Service": "://amazonaws.com"
+        },
+        "Action": "sts:AssumeRole"
+      }
+    ]
+  }'
+
+```
+```
+aws iam attach-role-policy \
+  --role-name ShopiTryLambdaRole \
+  --policy-arn arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+
+```
+```
+aws lambda create-function \
+  --function-name shopitry-payment-service \
+  --runtime nodejs20.x \
+  --role arn:aws:iam::897013207591:role/ShopiTryLambdaRole \
+  --handler src/handler.handler \
+  --zip-file fileb://payment-service.zip \
+  --region us-east-1  #ap-south-1
+
+```
 
 ```bash
 # Navigate to payment service
